@@ -1,0 +1,30 @@
+r.setex() <-- will set an expiration on a key in the database
+r.expire(<key>, timedelta()) <-- will update the expiration time on a day in the database!
+
+- Redis only supports one level of nesting by default. This means JSON will have to serialized then deserialized to store it properly in the the DB
+- Getting information out of Redis might be tricky because it has to be parsed from a bytestring. Redis has its own parser but how knows how well that works.
+- There probably isn't a simple mechanism for pub/sub to alert users that their convo is expiring so we'll have to do one of a few things:
+    > Every time the conversation gets updated, also send the remaining expiry timer for display (either in m:s or as a progress bar or something, maybe a color?)
+    > Constantly monitor the expiry timer by pinging the DB for updates (this is costly and probably not efficient at all)
+- The structure of the DB is probably going to be weird because it's all hash/dictionary-like. Multiple DBs are possible but probably not necessary at all.
+    ? { users: {}, rooms: {}, messages: {} } (will need to write methods that handle all of the look ups here so we aren't writing custom shit to find data all the time)
+- Because of the goofiness of the DB structure, we'll have to put a lot of extra work into developing an API that can traverse the DB reliably
+    > This is more work upfront but, in the long run, it's going to save us time and it's the proper way to do it anyways
++ We don't have to really worry about manually removing entries - just expire everything with timers (start with the room - expire everything associated with the room)
+! Should all messages expire after a few seconds?
+! Option to only see the other person's messages.
+! Option to randomly delete messages in conversion every X seconds.
+
+? What is the actual scope of this?
+? Should users be able to join multiple rooms?
+? How should rooms even work?
+? What should the database look like? Example above.
+? What information do we want to store?
+    ? About the users?
+    ? About the rooms?
+    ? About the messages?
+? How long should the expiration be?
+? How the fudge is a pub/sub system setup?
+? How do you secure the channel?
+? Should we try to encrypt stuff for funsies?
+    ? How does encryption even work here? Would each client need to create a separate key somehow?
