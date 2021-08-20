@@ -8,11 +8,15 @@ from typing import Callable, Dict, List
 
 from .Resource import RedisResource
 from .EventManager import EventManager
-from Models import ChannelResponse, Message
+from Models import Channel, ChannelResponse, Message
 
 class ChannelManager(RedisResource):
     def __init__(self, redis_instance: redis.Redis) -> None:
         self.r = redis_instance
+
+    def get_channel_data(self, channel_id: str) -> Channel:
+        channel = Channel(channel_id=channel_id, ttl= self.get_ttl(channel_id), messages=self.get_messages_list(channel_id))
+        return channel
 
     # error handling...
     def create_channel(self, emit_callable: Callable = None) -> ChannelResponse:
@@ -44,7 +48,17 @@ class ChannelManager(RedisResource):
         else:
             print('channel does not exist, son.') 
  
-    def messages(self, channel_id: str) -> List:
+    def get_messages_list(self, channel_id: str) -> List:
+        messages = []
+        _messages = json.loads(self.r.get(channel_id))['messages']
+
+        if len(_messages) > 0:
+            for _m in _messages:
+                messages.append(Message(content=_m['content'], user=_m['user'], time_sent=datetime.now().strftime('%d/%m/%Y %H:%M:%S')))
+
+        return messages
+
+    def get_messages(self, channel_id: str) -> Dict:
         messages = []
         _messages = json.loads(self.r.get(channel_id))['messages']
 

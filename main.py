@@ -30,60 +30,25 @@ async def create_channel():
     new_channel = cm.create_channel(r)
     return new_channel
 
+@app.get('/channel/{channel_id}/messages')
+def get_messages(channel_id: str):
+    pass
+    # might want to consider chunking later, if it looks necessary
+
 @app.post('/channel/{channel_id}/messages/add', response_model=MessageModel.MessageResponse, status_code=201)
 async def add_message(channel_id: str, req: MessageModel.MessageRequest):
     print(channel_id)
     cm.add_message(req, channel_id)
-    _messages = cm.messages(channel_id)
+    _messages = cm.get_messages(channel_id)
     return MessageModel.MessageResponse(messages=_messages['messages'], ttl=_messages['ttl'])
 
-# can also have channel/about, channel/ttl, channel/{id}/messages/delete, channel/{id}/messages/get?chunk=10&page=2
+@app.post('/channel/{channel_id}/ttl')
+def get_ttl(channel_id: str):
+    pass
 
-class Item(BaseModel):
-    name: str
-    description: Optional[str] = None
-    price: float
-    tax: Optional[float] = None
-
-# @app.get('/')
-# async def root():
-#     return {'messages', 'hi'}
-
-@app.post("/items/")
-async def read_items(item: Item, q: Optional[str] = Query(None, max_length=50)):
-    item_dict = item.dict()
-    if item.tax:
-        price_with_tax = item.price + item.tax
-        item_dict.update({"price_with_tax": price_with_tax})
-    return item_dict
-
-@app.get('/items1/{item_id}')
-async def read_item(item_id: int):
-    return {'item_id': item_id}
-
-class ItemTypes(str, Enum):
-    alexnet = 'alexnet'
-    resnet = 'resnet'
-    lenet = 'lenet'
-
-@app.get('/itemNames/{item_name}')
-async def get_items(item_name: ItemTypes):
-    if item_name == ItemTypes.alexnet:
-        return {'item_type': item_name, 'message': 'Deep Learning something or other...'}
-    
-    if item_name == ItemTypes.lenet:
-        return {'item_type': item_name, 'message': 'LeCNN all images. Blast off.'}
-    
-    return {'item_type': item_name, 'message': 'Some other item type.'}
+@app.post('/channel/{channel_id}', response_model=ChannelModel.Channel, status_code=200)
+def get_channel(channel_id: str):
+    return cm.get_channel_data(channel_id) 
+    # return all of the data for a channel (ChannelModel.Channel + list of messages?)
 
 
-# Query params - anything that isn't part of the path.
-fake_items_db = [
-    {'item_name': 'foo'},
-    {'item_name': 'bar'},
-    {'item_name': 'baz'}
-]
-
-@app.get('/items2/')
-async def read_item(skip: int = 0, limit: int = 10, q: Optional[str] = None):
-    return fake_items_db[skip : skip + limit]
