@@ -28,3 +28,16 @@ r.expire(<key>, timedelta()) <-- will update the expiration time on a day in the
 ? How do you secure the channel?
 ? Should we try to encrypt stuff for funsies?
     ? How does encryption even work here? Would each client need to create a separate key somehow?
+
+
+- Probably going to notice a lot of shit when Max does his testing.
+? Can Max get something up on GH for the front end so I can test sockets?
+? Is there anything else that needs to be done for the backend before websocket/keyevent notification testing?
+? What features are missing from the backend? Or routes?
+    - Chunking
+    - Error handling
+    - Model validators
+! Clean up a lot of the function returns to routes - a lot of them could just return a model and be g2g
+! Middleware to check connection to Redis?
+! Exception handling - use @app.exception_handler(<exception>) for global handling of these exceptions
+! Make a global exception handler for channels that don't exist - just raise that exception in ChannelManager or something...
