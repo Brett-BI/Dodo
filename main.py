@@ -29,19 +29,28 @@ cm = ChannelManager(r)
 async def channel_not_found_exception_handler(request, exc):
     return JSONResponse({'message': exc.message}, status_code=404)
 
+
+@app.exception_handler(redis.ConnectionError)
+async def redis_connection_error_handler(request, exc):
+    return JSONResponse({'message': 'Redis instance could not be reached.'}, status_code=500)
+
+
 @app.get('/')
 async def root():
     return "this is the root."
+
 
 @app.post('/channel/new', response_model=ChannelModel.ChannelResponse, status_code=201)
 async def create_channel():
     new_channel = cm.create_channel(r)
     return new_channel
 
+
 @app.get('/channel/{channel_id}/messages')
 async def get_messages(channel_id: str):
     pass
     # might want to consider chunking later, if it looks necessary
+
 
 @app.post('/channel/{channel_id}/messages/add', response_model=MessageModel.MessageResponse, status_code=201)
 async def add_message(channel_id: str, req: MessageModel.MessageRequest):
@@ -57,6 +66,7 @@ async def add_message(channel_id: str, req: MessageModel.MessageRequest):
 @app.get('/channel/{channel_id}/ttl')
 async def get_ttl(channel_id: str):
     pass
+
 
 @app.get('/channel/{channel_id}', response_model=ChannelModel.Channel, status_code=200)
 async def get_channel(channel_id: str):
