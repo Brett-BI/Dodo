@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+        console.log('Creating a new user...')
+        fetch('http://127.0.0.1:8000/user/create', {
+            method: 'GET',
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => console.log(data));
+
+        // websocket mockup
+        const socket = new WebSocket('ws://127.0.0.1:8000/socket');
+        console.log(socket);
+
+        socket.addEventListener('open', function(event) {
+            socket.send('Hello!');
+        })
+        
+        socket.addEventListener('message', function(event) {
+            console.log('Message from server: ');
+            console.log(event.data);
+        })
+    </script>
+    
+</body>
+</html>

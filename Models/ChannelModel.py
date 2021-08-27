@@ -7,6 +7,7 @@ from .MessageModel import Message
 class Channel(BaseModel):
     channel_id: str
     ttl: int
+    time_created: str
     messages: List[Message]
 
 class ChannelRequest(BaseModel):
@@ -15,3 +16,4 @@ class ChannelRequest(BaseModel):
 class ChannelResponse(BaseModel):
     channel_id: str
     ttl: int
+    time_created: str

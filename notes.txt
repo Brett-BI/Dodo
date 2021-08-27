@@ -42,3 +42,5 @@ r.expire(<key>, timedelta()) <-- will update the expiration time on a day in the
 ! Exception handling - use @app.exception_handler(<exception>) for global handling of these exceptions
 ! Make a global exception handler for channels that don't exist - just raise that exception in ChannelManager or something...
 ! Use a Pydantic model to define a channel
+! Might want to pass a time_created timestamp when a new channel is created to account for any latency
+! Auth w/ React App
